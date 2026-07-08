@@ -29,7 +29,7 @@ public class FollowService {
             return new UserNameDto(name, null);
         }
         String[] parts =  name.split("#", 2);
-        if(parts.length != 8){
+        if(parts[1].length() != 8){
             throw new GeneralException(ErrorCode.INVALID_HANDLE_FORMAT);
         }
         return new UserNameDto(parts[0], parts[1]);

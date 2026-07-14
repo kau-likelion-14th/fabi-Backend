@@ -29,7 +29,7 @@ public class FollowService {
             return new UserNameDto(name, null);
         }
         String[] parts =  name.split("#", 2);
-        if(parts.length != 8){
+        if(parts[1].length() != 8){
             throw new GeneralException(ErrorCode.INVALID_HANDLE_FORMAT);
         }
         return new UserNameDto(parts[0], parts[1]);
@@ -59,6 +59,53 @@ public class FollowService {
         followRepository.save(follow);
 
         return FollowUserResponse.from(follow.getToUser());
+    }
+
+    @Transactional
+    public void unfollowUser(Long fromUserId, Long toUserId) {
+        User fromUser = userRepository.findById(fromUserId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+
+        User toUser = userRepository.findById(toUserId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.FOLLOW_TARGET_NOT_FOUND));
+
+        if (fromUser.getId().equals(toUser.getId())) {
+            throw new GeneralException(ErrorCode.FOLLOW_SELF_NOT_ALLOWED);
+        }
+
+        Follow follow = followRepository.findByFromUserAndToUser(fromUser, toUser)
+                .orElseThrow(() -> new GeneralException(ErrorCode.FOLLOW_NOT_FOUND));
+
+        followRepository.delete(follow);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FollowUserResponse> getFollowers(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+
+        return followRepository.findByToUser(user).stream()
+                .map(follow -> FollowUserResponse.from(follow.getFromUser()))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<FollowUserResponse> getFollowings(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+
+        return followRepository.findByFromUser(user).stream()
+                .map(follow -> FollowUserResponse.from(follow.getToUser()))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<FollowUserResponse> getCanFollowUsers(Long userId, Pageable pageable) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+
+        return userRepository.findCanFollowUser(userId, pageable)
+                .map(FollowUserResponse::from);
     }
 
     @Transactional(readOnly = true)

@@ -44,6 +44,9 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String s3ImageKey;
 
+    @Column(columnDefinition = "TEXT")
+    private String fcmToken;
+
     @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<Follow> followers;
 
@@ -72,5 +75,9 @@ public class User extends BaseEntity {
      */
     public void  updateIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }

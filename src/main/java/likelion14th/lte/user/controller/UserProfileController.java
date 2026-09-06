@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserProfileController{
+public class    UserProfileController{
 
     public final UserProfileService userProfileService;
 

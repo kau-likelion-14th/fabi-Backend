@@ -16,7 +16,6 @@ public enum SuccessCode implements BaseCode { // 성공
     USER_DELETE_SUCCESS(HttpStatus.OK, "USER_2003", "회원탈퇴가 완료되었습니다."),
     USER_PROFILE_UPDATE_SUCCESS(HttpStatus.OK, "USER_2006", "프로필 저장이 완료되었습니다."),
     USER_INFO_GET_SUCCESS(HttpStatus.OK, "USER_2007", "유저 정보 조회가 완료되었습니다."),
-    FCM_TOKEN_UPDATE_SUCCESS(HttpStatus.OK, "USER_2008", "FCM 토큰 저장이 완료되었습니다."),
 
     FOLLOW_ADD_SUCCESS(HttpStatus.CREATED,"FOLLOW_2011","팔로우 추가가 완료되었습니다."),
     FOLLOW_DELETE_SUCCESS(HttpStatus.OK, "FOLLOW_2001", "언팔로우가 완료되었습니다."),

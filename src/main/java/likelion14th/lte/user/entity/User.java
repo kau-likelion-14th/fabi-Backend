@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import likelion14th.lte.Entity.BaseEntity;
 import likelion14th.lte.follow.entity.Follow;
 import likelion14th.lte.statistic.entity.Statistic;
+import likelion14th.lte.youtube.entity.SavedSong;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -50,6 +51,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<Follow> followerings;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SavedSong> savedSongs;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "statistic_id")
     private Statistic statistic;
@@ -61,6 +65,7 @@ public class User extends BaseEntity {
         this.introduction = introduction;
         this.followers = new ArrayList<>();
         this.followerings = new ArrayList<>();
+        this.savedSongs = new ArrayList<>();
         this.statistic = Statistic.create();
     }
 

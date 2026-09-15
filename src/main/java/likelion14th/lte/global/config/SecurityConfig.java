@@ -36,6 +36,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/oauth2/**",             // 카카오 OAuth 리디렉션
                                 "/login/oauth2/**",
+                                // YouTube 세션: 로그인 구현 전 더미 User 사용
+                                "/api/youtube/**",
                                 //아기사자용 다양성 존중을 위한 모든 엔드포인트 허용
                                 "/**",
                                 "/api/auth/kakao",

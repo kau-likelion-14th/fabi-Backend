@@ -3,6 +3,8 @@ package likelion14th.lte.user.entity;
 import jakarta.persistence.*;
 import likelion14th.lte.Entity.BaseEntity;
 import likelion14th.lte.follow.entity.Follow;
+import likelion14th.lte.statistic.entity.Statistic;
+import likelion14th.lte.youtube.entity.SavedSong;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -49,6 +51,13 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<Follow> followerings;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SavedSong> savedSongs;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "statistic_id")
+    private Statistic statistic;
+
     @Builder(access = AccessLevel.PUBLIC)
     private User(String username, String userTag, String introduction) {
         this.username = username;
@@ -56,6 +65,8 @@ public class User extends BaseEntity {
         this.introduction = introduction;
         this.followers = new ArrayList<>();
         this.followerings = new ArrayList<>();
+        this.savedSongs = new ArrayList<>();
+        this.statistic = Statistic.create();
     }
 
     // [Q3. @Setter를 위 @Getter 처럼 사용하면 모든 맴버들에 setIntruduction() 같은 setter 메서드가 생성됩니다.
@@ -67,4 +78,5 @@ public class User extends BaseEntity {
     public void  updateIntroduction(String introduction) {
         this.introduction = introduction;
     }
+
 }

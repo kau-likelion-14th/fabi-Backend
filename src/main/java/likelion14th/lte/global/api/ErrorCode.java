@@ -27,9 +27,9 @@ public enum ErrorCode implements BaseCode { // 실패
     KAKAO_API_FAILED(HttpStatus.BAD_GATEWAY, "KAKAO_5021", "카카오 서버 응답에 실패했습니다."),
 
     // YouTube
-    YOUTUBE_API_FAILED(HttpStatus.BAD_GATEWAY, "YOUTUBE_API_FAILED", "YouTube API 호출에 실패했습니다."),
+    YOUTUBE_API_FAILED(HttpStatus.BAD_GATEWAY, "YOUTUBE_5021", "YouTube API 호출에 실패했습니다."),
     SONG_ALREADY_SAVED(HttpStatus.CONFLICT, "SONG_ALREADY_SAVED", "이미 저장된 곡입니다."),
-    SONG_NOT_FOUND(HttpStatus.NOT_FOUND, "TODO_4041", "해당 노래를 찾을 수 없습니다."),
+    SONG_NOT_FOUND(HttpStatus.NOT_FOUND, "SONG_4041", "해당 노래를 찾을 수 없습니다."),
 
     // Image Upload
     IMAGE_FILE_EMPTY(HttpStatus.BAD_REQUEST, "IMG_4001", "업로드된 파일이 비어 있습니다."),
@@ -68,6 +68,7 @@ public enum ErrorCode implements BaseCode { // 실패
     TODO_DATE_REQUIRED(HttpStatus.BAD_REQUEST, "TODO_4007", "일반 투두는 날짜 입력이 필수입니다."),
     TODO_ROUTINE_TO_NORMAL_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "TODO_4008", "루틴 투두는 일반 투두로 변경할 수 없습니다. 필요하면 루틴 투두를 삭제하고 원하는 날짜로 일반 투두를 새로 생성해주세요."),
     TODO_DATE_NOT_FOUND(HttpStatus.NOT_FOUND, "TODO_4042", "해당 날짜의 투두 기록을 찾을 수 없습니다."),
+    TODO_ROUTINE_TYPE_CHANGE_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "TODO_4009", "투두 타입은 변경할 수 없습니다. 루틴은 루틴끼리, 일반은 일반끼리만 수정할 수 있습니다.");
     ;
     private final HttpStatus httpStatus;
     private final String code;

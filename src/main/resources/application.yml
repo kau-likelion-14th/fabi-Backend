@@ -18,7 +18,7 @@ springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
-    path: /swagger-ui/index.html
+    # Swagger UI 접속 주소: /swagger-ui/index.html (기본 정적 리소스 경로)
     display-request-duration: true
     operations-sorter: method
 
@@ -46,3 +46,20 @@ spring:
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
+
+kakao:
+  client-id: ${KAKAO_REST_API_KEY}
+  client-secret: ${KAKAO_CLIENT_SECRET}
+  redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:3000/login/oauth2/code/kakao}
+  token-uri: https://kauth.kakao.com/oauth/token
+  user-info-uri: https://kapi.kakao.com/v2/user/me
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-exp-ms: ${JWT_EXPIRATION:3600000}
+  refresh-exp-ms: ${JWT_REFRESH_EXPIRATION:1209600000}
+
+auth:
+  cookie:
+    secure: ${AUTH_COOKIE_SECURE:false}
+    same-site: ${AUTH_COOKIE_SAME_SITE:Lax}

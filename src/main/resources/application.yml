@@ -11,6 +11,17 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region: ${AWS_REGION:${AWS_REAGION}}
+    s3:
+      bucket: ${AWS_BUCKET}
+      path:
+        location: user/
+
 server:
   port: ${PORT:8080}
 

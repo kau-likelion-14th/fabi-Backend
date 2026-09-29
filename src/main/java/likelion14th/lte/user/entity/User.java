@@ -62,15 +62,21 @@ public class User extends BaseEntity {
     private Statistic statistic;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(String username, String userTag, String introduction, String providerId) {
+    private User(String username, String userTag, String introduction, String providerId, String s3ImageKey, List<Follow> followers, List<Follow> followerings, String profileImage) {
         this.providerId = providerId;
         this.username = username;
         this.userTag = userTag;
         this.introduction = introduction;
+        this.s3ImageKey = s3ImageKey;
+        this.profileImage = profileImage;
         this.followers = new ArrayList<>();
         this.followerings = new ArrayList<>();
         this.savedSongs = new ArrayList<>();
         this.statistic = Statistic.create();
+    }
+    public void updateProfileImage(String s3ImageUrl, String s3ImageKey) {
+        this.s3ImageKey = s3ImageKey;
+        this.profileImage = s3ImageUrl;
     }
 
     // [Q3. @Setter를 위 @Getter 처럼 사용하면 모든 맴버들에 setIntruduction() 같은 setter 메서드가 생성됩니다.

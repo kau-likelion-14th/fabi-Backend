@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -27,13 +29,12 @@ public class    UserProfileController{
     /** 답변:
      * Service에 작업을 위임하면 Controller는 API I/O만 담당하고 실제 로직은 Service에서
      * 처리가 이루어지기 때문에 계층별 역할이 명확해져 유지보수가 용이하다.
-    */
+     */
 
     @GetMapping
-    public ApiResponse<UserProfileResponse> getUserProfile(@AuthenticationPrincipal Jwt jwt){
-        Long userId = Long.valueOf(jwt.getSubject());
+    public ApiResponse<UserProfileResponse> getUserProfile(@RequestParam Long userId){
         UserProfileResponse response = userProfileService.getUserProfile(userId);
-        return ApiResponse.onSuccess(SuccessCode.OK, response);
+        return ApiResponse.onSuccess(SuccessCode.USER_INFO_GET_SUCCESS, response);
     }
 
     @PostMapping
@@ -48,5 +49,17 @@ public class    UserProfileController{
     ){
         UserProfileResponse response = userProfileService.createTestUser(request);
         return ApiResponse.onSuccess(SuccessCode.CREATED, response);
+    }
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "유저 프로필 추가 및 수정", description = "유저 프로필 이미지를 추가하거나 수정합니다.")
+    public ApiResponse<UserProfileResponse> putUserProfile(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam("image") MultipartFile file
+    ){
+        Long userId = Long.valueOf(jwt.getSubject());
+
+        UserProfileResponse response = userProfileService.updateProfileImage(userId, file);
+        return ApiResponse.onSuccess(SuccessCode.PROFILE_PUT_SUCCESS, response);
     }
 }

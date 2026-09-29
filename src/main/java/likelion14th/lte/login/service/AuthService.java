@@ -86,7 +86,6 @@ public class AuthService {
     public void withdraw(Long userId) {
         User user = getUserOrThrow(userId);
         refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
-        // 엔티티 삭제로 TodoDate의 cascade 삭제도 적용합니다.
         todoRepository.deleteAll(todoRepository.findAllByUser(user));
         refreshTokenRepository.flush();
         todoRepository.flush();

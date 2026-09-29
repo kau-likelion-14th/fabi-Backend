@@ -35,14 +35,13 @@ dependencies {
 
     //spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.security:spring-security-config'
 
 
-    //oauth (kakao)
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
+    // JWT 인증
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
 
     //swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
 
     //aws
     //implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' #보안이슈로 수정
@@ -59,11 +58,6 @@ dependencies {
 
     //env
     implementation 'io.github.cdimascio:dotenv-java:3.0.0'
-
-    //jwt
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     //test
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

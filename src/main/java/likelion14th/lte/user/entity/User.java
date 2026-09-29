@@ -26,6 +26,9 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String providerId;
+
     // [Q2. @Column(nullable = false) 어노테이션이 DB와 자바 코드 사이에서 하는 역할은 무엇인가요?]
     /** 답변:
      * 해당 column에 null이 저장되는 것을 제한한다. 무결성
@@ -46,10 +49,10 @@ public class User extends BaseEntity {
     private String s3ImageKey;
 
     @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
-    private List<Follow> followers;
+    private List<Follow> followers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
-    private List<Follow> followerings;
+    @OneToMany(mappedBy = "fromUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
+    private List<Follow> followerings = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SavedSong> savedSongs;
@@ -59,7 +62,8 @@ public class User extends BaseEntity {
     private Statistic statistic;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(String username, String userTag, String introduction) {
+    private User(String username, String userTag, String introduction, String providerId) {
+        this.providerId = providerId;
         this.username = username;
         this.userTag = userTag;
         this.introduction = introduction;

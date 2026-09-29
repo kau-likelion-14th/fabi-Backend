@@ -11,6 +11,8 @@ import likelion14th.lte.user.service.UserProfileService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,12 +27,13 @@ public class    UserProfileController{
     /** 답변:
      * Service에 작업을 위임하면 Controller는 API I/O만 담당하고 실제 로직은 Service에서
      * 처리가 이루어지기 때문에 계층별 역할이 명확해져 유지보수가 용이하다.
-     */
+    */
 
     @GetMapping
-    public ApiResponse<UserProfileResponse> getUserProfile(@RequestParam Long userId){
+    public ApiResponse<UserProfileResponse> getUserProfile(@AuthenticationPrincipal Jwt jwt){
+        Long userId = Long.valueOf(jwt.getSubject());
         UserProfileResponse response = userProfileService.getUserProfile(userId);
-        return ApiResponse.onSuccess(SuccessCode.USER_INFO_GET_SUCCESS, response);
+        return ApiResponse.onSuccess(SuccessCode.OK, response);
     }
 
     @PostMapping

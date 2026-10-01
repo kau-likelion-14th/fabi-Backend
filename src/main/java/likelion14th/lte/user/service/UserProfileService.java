@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import likelion14th.lte.global.api.ErrorCode;
 import likelion14th.lte.global.exception.GeneralException;
 import likelion14th.lte.user.dto.request.CreateTestUserRequest;
+import likelion14th.lte.user.dto.request.UserIntroRequest;
 import likelion14th.lte.user.dto.response.UserProfileResponse;
 import likelion14th.lte.user.entity.User;
 import likelion14th.lte.user.repository.UserRepository;
@@ -103,6 +104,34 @@ public class UserProfileService{
             throw new GeneralException(mapToErrorCode(e.getReason()));
         }
     }
+
+    @Transactional
+    public UserProfileResponse deleteProfileImage(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+
+        String s3ImageKey = user.getS3ImageKey();
+        if (s3ImageKey != null && !s3ImageKey.isBlank()) {
+            try {
+                s3Utils.deleteFile(s3ImageKey);
+            } catch (UtilException e) {
+                throw new GeneralException(mapToErrorCode(e.getReason()));
+            }
+        }
+
+        user.updateProfileImage(null, null);
+        return UserProfileResponse.from(user);
+    }
+
+    @Transactional
+    public UserProfileResponse updateIntroduction(Long userId, UserIntroRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+
+        user.updateIntroduction(request.getIntroduce());
+        return UserProfileResponse.from(user);
+    }
+
     private ErrorCode mapToErrorCode(UtilException.Reason reason) {
         return switch (reason) {
             case FILE_EMPTY -> ErrorCode.IMAGE_FILE_EMPTY;

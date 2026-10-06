@@ -5,18 +5,24 @@ import org.springframework.transaction.annotation.Transactional;
 import likelion14th.lte.global.api.ErrorCode;
 import likelion14th.lte.global.exception.GeneralException;
 import likelion14th.lte.user.dto.request.CreateTestUserRequest;
+import likelion14th.lte.user.dto.request.UserIntroRequest;
 import likelion14th.lte.user.dto.response.UserProfileResponse;
 import likelion14th.lte.user.entity.User;
 import likelion14th.lte.user.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import likelion14th.lte.utils.Image.ImageUtil;
+import likelion14th.lte.utils.S3.S3Dto;
+import likelion14th.lte.utils.S3.S3Utils;
+import likelion14th.lte.utils.exception.UtilException;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserProfileService{
-
+    private final S3Utils s3Utils;
+    private final ImageUtil imageUtil;
     // [Q5. Service 안에서 new UserRepository() 로 객체를 직접 생성하지 않고,
     // 외부에서 의존성 주입(DI)을 받는 이유는 무엇인가요? (결합도와 단위 테스트 관점)]
     /** 답변:
@@ -68,5 +74,74 @@ public class UserProfileService{
             throw new GeneralException(ErrorCode.BAD_REQUEST);
         }
         return UserProfileResponse.from(savedUser);
+    }
+
+    @Transactional
+    public UserProfileResponse updateProfileImage(Long userId, MultipartFile imageFile){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+        try {
+            imageUtil.validateImage(imageFile);
+            ImageUtil.ResizedImage resizedImage =
+                    imageUtil.resizeProfileToPngBytes(imageFile, 256);
+
+            String originalFilename = imageFile.getOriginalFilename();
+            String baseName = originalFilename == null ? "profile" : originalFilename;
+            int extensionIndex = baseName.lastIndexOf('.');
+            if (extensionIndex > 0) {
+                baseName = baseName.substring(0, extensionIndex);
+            }
+
+            S3Dto uploadedImage = s3Utils.uploadBytes(
+                    resizedImage.bytes(), baseName + ".png", resizedImage.contentType());
+
+            if (user.getS3ImageKey() != null && !user.getS3ImageKey().isBlank()) {
+                s3Utils.deleteFile(user.getS3ImageKey());
+            }
+            user.updateProfileImage(uploadedImage.getUrl(), uploadedImage.getKey());
+            return UserProfileResponse.from(user);
+        } catch (UtilException e) {
+            throw new GeneralException(mapToErrorCode(e.getReason()));
+        }
+    }
+
+    @Transactional
+    public UserProfileResponse deleteProfileImage(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+
+        String s3ImageKey = user.getS3ImageKey();
+        if (s3ImageKey != null && !s3ImageKey.isBlank()) {
+            try {
+                s3Utils.deleteFile(s3ImageKey);
+            } catch (UtilException e) {
+                throw new GeneralException(mapToErrorCode(e.getReason()));
+            }
+        }
+
+        user.updateProfileImage(null, null);
+        return UserProfileResponse.from(user);
+    }
+
+    @Transactional
+    public UserProfileResponse updateIntroduction(Long userId, UserIntroRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.USER_NOT_FOUND));
+
+        user.updateIntroduction(request.getIntroduce());
+        return UserProfileResponse.from(user);
+    }
+
+    private ErrorCode mapToErrorCode(UtilException.Reason reason) {
+        return switch (reason) {
+            case FILE_EMPTY -> ErrorCode.IMAGE_FILE_EMPTY;
+            case FILE_TOO_LARGE -> ErrorCode.IMAGE_TOO_LARGE;
+            case TYPE_NOT_ALLOWED -> ErrorCode.IMAGE_TYPE_NOT_ALLOWED;
+
+            case IMAGE_PROCESS_FAILED -> ErrorCode.IMAGE_PROCESS_FAILED;
+
+            case S3_UPLOAD_FAILED -> ErrorCode.S3_UPLOAD_FAILED;
+            case S3_DELETE_FAILED -> ErrorCode.S3_DELETE_FAILED;
+        };
     }
 }

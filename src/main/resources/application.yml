@@ -2,7 +2,7 @@ spring:
   config:
     import: optional:file:.env[.properties]
   profiles:
-    active: local
+    default: local
 
   servlet:
     multipart:
@@ -13,7 +13,6 @@ spring:
 server:
   port: ${PORT:8080}
 
-# Swagger
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -26,7 +25,6 @@ youtube:
   api-key: ${YOUTUBE_API_KEY}
   api-base: https://www.googleapis.com/youtube/v3
 
-# Kakao OAuth
 kakao:
   client-id: ${KAKAO_REST_API_KEY}
   client-secret: ${KAKAO_CLIENT_SECRET}
@@ -34,9 +32,8 @@ kakao:
   token-uri: https://kauth.kakao.com/oauth/token
   user-info-uri: https://kapi.kakao.com/v2/user/me
 
-# Our JWT
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:likelion14th-lte-jwt-secret-key-2024}
   access-exp-ms: ${JWT_EXPIRATION:3600000}
   refresh-exp-ms: ${JWT_REFRESH_EXPIRATION:1209600000}
 
@@ -45,16 +42,6 @@ auth:
     secure: ${AUTH_COOKIE_SECURE:false}
     same-site: ${AUTH_COOKIE_SAME_SITE:Lax}
 
-cloud:
-  aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    region: ${AWS_REGION}
-    s3:
-      bucket: ${AWS_BUCKET}
-      path:
-        location: user/
 
 ---
 # local profile
@@ -62,20 +49,48 @@ spring:
   config:
     activate:
       on-profile: local
+
   datasource:
     url: ${LOCAL_DB_URL}
     username: ${LOCAL_DB_USERNAME}
     password: ${LOCAL_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
 logging:
   level:
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+
+---
+# develop profile
+spring:
+  config:
+    activate:
+      on-profile: develop
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  sql:
+    init:
+      mode: never
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        use_sql_comments: true
+        default_batch_fetch_size: 1000

@@ -53,6 +53,7 @@ cloud:
       secret-key: ${AWS_SECRET_KEY}
     region: ${AWS_REGION}
 
+
 ---
 # local profile
 spring:

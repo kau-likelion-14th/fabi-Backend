@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CategoryDataInitializer implements ApplicationRunner {
-    private static final List<String> DEFAULT_CATEGORY_NAMES = List.of("운동", "동아리", "공부", "집안일");
+    private static final List<String> DEFAULT_CATEGORY_NAMES = List.of("운동", "동아리", "공부");
 
     private final CategoryRepository categoryRepository;
 

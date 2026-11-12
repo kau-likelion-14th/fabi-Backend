@@ -29,7 +29,7 @@ public class S3Utils {
         return config.getLocationPath() + UUID.randomUUID() + "-" + fileName;
     }
     private String createFileUrl(String objectKey){
-        return "https://" + config.getBucket()+".s3." + config.getRegion()+".amazon.com/"+objectKey;
+        return "https://" + config.getBucket()+".s3." + config.getRegion()+".amazonaws.com/"+objectKey;
     }
 
     public S3Dto uploadFile(MultipartFile file){
